@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using System.Reflection;
+using HarmonyLib;
 using RimWorld;
 using Verse;
 
@@ -9,68 +10,40 @@ public static class Harmony_QualityAndDurability
 {
     static Harmony_QualityAndDurability()
     {
-        var harmony = new Harmony("Amnabi.QualityAndDurability");
-        //harmony.PatchAll();
-        harmony.Patch(
-            AccessTools.Method(typeof(CompQuality), nameof(CompQuality.SetQuality)),
-            null,
-            new HarmonyMethod(typeof(Harmony_QualityAndDurability), nameof(SetQualityPatch)));
-        harmony.Patch(
-            AccessTools.DeclaredPropertyGetter(typeof(Thing), nameof(Thing.MaxHitPoints)),
-            null,
-            new HarmonyMethod(typeof(Harmony_QualityAndDurability), nameof(MaxHitPointsPatch)));
+        new Harmony("Amnabi.QualityAndDurability").PatchAll(Assembly.GetExecutingAssembly());
     }
 
-    public static void SetQualityPatch(CompQuality __instance)
-    {
-        __instance.parent.HitPoints = __instance.parent.MaxHitPoints;
-    }
-
-    public static void MaxHitPointsPatch(Thing __instance, ref int __result)
-    {
-        if (!__instance.def.IsWeapon && !__instance.def.IsApparel)
-        {
-            return;
-        }
-
-        var qualityComp = __instance.TryGetComp<CompQuality>();
-        if (qualityComp != null)
-        {
-            __result = (int)(__result * adjustSwitch(qualityComp.Quality));
-        }
-    }
-
-    public static float adjustSwitch(QualityCategory q)
+    public static float AdjustSwitch(QualityCategory q)
     {
         switch (q)
         {
             case QualityCategory.Awful:
             {
-                return QualityAndDurabilityMod.instance.Settings.Awful;
+                return QualityAndDurabilityMod.Instance.Settings.Awful;
             }
             case QualityCategory.Poor:
             {
-                return QualityAndDurabilityMod.instance.Settings.Poor;
+                return QualityAndDurabilityMod.Instance.Settings.Poor;
             }
             case QualityCategory.Normal:
             {
-                return QualityAndDurabilityMod.instance.Settings.Normal;
+                return QualityAndDurabilityMod.Instance.Settings.Normal;
             }
             case QualityCategory.Good:
             {
-                return QualityAndDurabilityMod.instance.Settings.Good;
+                return QualityAndDurabilityMod.Instance.Settings.Good;
             }
             case QualityCategory.Excellent:
             {
-                return QualityAndDurabilityMod.instance.Settings.Excellent;
+                return QualityAndDurabilityMod.Instance.Settings.Excellent;
             }
             case QualityCategory.Masterwork:
             {
-                return QualityAndDurabilityMod.instance.Settings.Masterwork;
+                return QualityAndDurabilityMod.Instance.Settings.Masterwork;
             }
             case QualityCategory.Legendary:
             {
-                return QualityAndDurabilityMod.instance.Settings.Legendary;
+                return QualityAndDurabilityMod.Instance.Settings.Legendary;
             }
         }
 
